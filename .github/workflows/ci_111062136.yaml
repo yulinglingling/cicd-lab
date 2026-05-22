@@ -3,7 +3,7 @@ name: CI Pipeline Check
 on:
   push:
     branches:
-      - "**"  # 任何分支 push 時都會自動執行 (滿足配分 20%)
+      - '**' # 任何分支 push 時都會自動執行 (滿足配分 20%)
 
 jobs:
   ci-check:
@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: '22'
           cache: 'npm' # 加速後續的安裝
 
       - name: Install dependencies
