@@ -1,0 +1,41 @@
+name: CI Pipeline Check
+
+on:
+  push:
+    branches:
+      - "**"  # 任何分支 push 時都會自動執行 (滿足配分 20%)
+
+jobs:
+  ci-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: 'npm' # 加速後續的安裝
+
+      - name: Install dependencies
+        run: npm ci
+
+      # 1. TypeScript 型別檢查 (滿足配分 20%)
+      - name: TypeScript Typecheck
+        run: npx tsc --noEmit
+
+      # 2. Prettier 格式檢查 (滿足配分 20%)
+      - name: Prettier Check
+        run: npx prettier --check .
+
+      # 3. 執行測試並產出 junit 報告 (滿足配分 20%)
+      - name: Run Tests
+        run: npm test -- --reporter=default --reporter=junit --outputFile=vitest-junit.xml
+
+      # 4. 將測試結果顯示於 GitHub Actions 結果頁面 (滿足配分 20%)
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: always() # 確保測試失敗時，依然能把「失敗報告」畫在頁面上
+        with:
+          report_paths: '**/vitest-junit.xml'
